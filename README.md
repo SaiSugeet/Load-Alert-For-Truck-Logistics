@@ -1,158 +1,202 @@
-Smart LoadAlert: Real-Time Truck Load & GPS Monitoring System
-📌 Project Overview
+# Smart LoadAlert: Real-Time Truck Load & GPS Monitoring System
 
-Smart LoadAlert is a real-time logistics monitoring system designed to track truck load weight and GPS location, detect overloading conditions, and visualize fleet telemetry through an interactive dashboard.
+Smart LoadAlert is a Streamlit-based logistics monitoring dashboard that simulates truck load telemetry and GPS movement in real time. It is designed to demonstrate how freight operators can detect overload conditions early, visualize route-level activity, and maintain exportable telemetry records from a single lightweight interface.
 
-The system simulates IoT-based truck telemetry and demonstrates how smart monitoring can improve road safety, regulatory compliance, and fleet management efficiency.
+This project addresses a practical logistics problem: overloaded trucks increase accident risk, damage road infrastructure, reduce fuel efficiency, and create compliance exposure. Smart LoadAlert turns that problem into an interactive monitoring workflow by combining threshold-based alerting, live telemetry visualization, and map-based tracking in a deployable web app.
 
-🎯 Objective
+## Overview
 
-The goal of this project is to create a smart monitoring framework that:
+The current version is a simulation-first prototype for truck load monitoring. It allows users to stream synthetic telemetry, manually inject readings, monitor threshold breaches, inspect movement on a live map, and download the full session log as CSV.
 
-Tracks truck load weight in real time
+Although the app currently uses simulated inputs, the system is structured to represent a practical IoT dashboard pattern and can be extended to real sensor ingestion through HTTP or MQTT.
 
-Monitors GPS location continuously
+## Features
 
-Detects overload violations instantly
+- Real-time truck telemetry simulation for load and GPS movement
+- Configurable overload threshold for alert generation
+- Manual telemetry entry for testing specific scenarios
+- Auto-stream mode for continuous simulated data generation
+- Live KPI cards for current weight, current location, total points, and overload count
+- Interactive weight history chart with threshold reference line
+- Map-based visualization of the latest truck path using Folium
+- Color-coded alert markers to distinguish normal vs overload readings
+- CSV export for session telemetry logs
+- Lightweight single-file architecture that is easy to deploy and extend
 
-Visualizes fleet data on a dashboard and live map
+## Architecture / How It Works
 
-Logs telemetry for historical analysis and compliance
+At a high level, Smart LoadAlert follows a simple telemetry monitoring flow:
 
-🧠 Core Concept
+1. A user configures truck identity, overload threshold, starting coordinates, and simulation controls from the sidebar.
+2. The app generates telemetry points or accepts manual entries containing timestamp, truck ID, weight, latitude, longitude, and alert status.
+3. Each incoming point is evaluated with rule-based overload logic:
 
-Overloaded trucks can lead to:
-
-Road infrastructure damage
-
-Increased accident risk
-
-Fuel inefficiency
-
-Mechanical stress on vehicles
-
-Legal penalties
-
-This project demonstrates how an IoT-style alert system can automatically detect overload conditions and provide actionable insights.
-
-⚙️ How the System Works
-1️⃣ Sensor Simulation
-
-The system simulates real-world truck telemetry:
-
-Weight sensor data (in tons)
-
-GPS location (latitude & longitude)
-
-Random noise to mimic sensor variations
-
-Sudden load changes (loading/unloading scenarios)
-
-2️⃣ Overload Detection
-
-Each telemetry point is evaluated:
+```python
 alert = weight > threshold
+```
 
-If the truck exceeds the safe load threshold, the system triggers an overload alert.
+4. Telemetry is stored in Streamlit session state as an in-memory log for the active session.
+5. The dashboard renders:
+   - current truck metrics
+   - a time-series weight chart
+   - a live map showing recent truck movement and overload events
+6. Users can clear the log or export the accumulated telemetry as a CSV file.
 
-3️⃣ Live Dashboard
+### Data Flow
 
-The dashboard displays:
+`Sidebar Inputs / Manual Entry / Auto Stream`
+-> `Telemetry Simulation`
+-> `Threshold-Based Alert Evaluation`
+-> `Session-State Log`
+-> `Charts + Map + Metrics + CSV Export`
 
-Current truck weight
+### Current System Scope
 
-Current GPS location
+- Frontend/UI: Streamlit dashboard
+- Processing: in-app simulation and rule-based alerting
+- Storage: session memory only
+- Integration model: prototype ready to be connected to live HTTP/MQTT telemetry later
 
-Total telemetry points recorded
+## Tech Stack
 
-Number of overload events
+### Machine Learning / AI
 
-Weight history trend graph
+- No ML model in the current version
+- Rule-based overload detection using configurable threshold logic
 
-This represents a fleet monitoring control interface.
+### Backend / APIs
 
-4️⃣ Map-Based Tracking
+- Python 3.12
+- Streamlit for the application runtime and UI layer
+- In-memory session-state processing for telemetry handling
 
-The system uses geospatial visualization to:
+### Cloud / Deployment
 
-Show truck movement path
+- Streamlit Community Cloud ready
+- Local deployment supported out of the box
+- No Docker or dedicated cloud infrastructure configuration included yet
 
-Highlight overload events in red
+### Tools / Libraries
 
-Display recent positions
+- Pandas for telemetry logging and transformation
+- Plotly for time-series visualization
+- Folium for map rendering
+- `streamlit-folium` for embedding Folium maps inside Streamlit
 
-Provide real-time situational awareness
+## Performance & Metrics
 
-5️⃣ Data Logging & Export
+The current project is a simulation-driven dashboard, so metrics below are based on observed application behavior and code-level limits rather than production benchmarking.
 
-All telemetry data is stored with:
+- Alert detection accuracy: `100%` for the implemented rule logic, because overload detection is a direct threshold comparison on each telemetry point
+- Update latency: `<1s (approx)` per interaction/rerun on a typical local setup, depending on machine performance and browser responsiveness
+- Telemetry throughput: `1-20 points per rerun` configurable in auto-stream mode
+- Map window: last `30` telemetry points visualized on the live route map
+- Dataset size: session-based and user-driven, with no hard-coded storage cap beyond active app memory
+- Export capability: full in-session telemetry log downloadable as CSV
 
-Timestamp
+## Getting Started
 
-Truck ID
+### Prerequisites
 
-Weight
+- Python `3.10+` recommended
+- `pip`
 
-Latitude & Longitude
+### Installation
 
-Alert status
+```bash
+git clone https://github.com/SaiSugeet/Load-Alert-For-Truck-Logistics.git
+cd Load-Alert-For-Truck-Logistics
+python -m venv .venv
+```
 
-Logs can be exported as CSV for:
+Activate the virtual environment:
 
-Analysis
+```bash
+# Windows
+.venv\Scripts\activate
 
-Reporting
+# macOS / Linux
+source .venv/bin/activate
+```
 
-Compliance auditing
-🛠 Technologies Used
+Install dependencies:
 
-Python
+```bash
+pip install -r requirements.txt
+```
 
-Streamlit (Dashboard UI)
+### Run the Project
 
-Plotly (Data visualization)
+```bash
+streamlit run app.py
+```
 
-Folium (Map visualization)
+After launch, Streamlit will open the local app in your browser, typically at:
 
-Pandas (Telemetry data handling)
+```text
+http://localhost:8501
+```
 
-🌍 Real-World Applications
+## Deployment
 
-This system concept can be used in:
+### Local
 
-Smart fleet management
+The app runs locally with Streamlit and stores telemetry only for the active browser session.
 
-Highway safety systems
+### Streamlit Community Cloud
 
-Logistics monitoring
+This project is a good fit for Streamlit Community Cloud deployment:
 
-IoT vehicle telematics
+1. Push the repository to GitHub
+2. Sign in to Streamlit Community Cloud
+3. Select this repository
+4. Set the main file path to `app.py`
+5. Deploy
 
-Compliance enforcement
+Required deployment file:
 
-With real hardware, this could integrate with:
+- `requirements.txt`
 
-Load sensors
+Current deployment note:
 
-GPS modules
+- No cloud database, message broker, or API service is configured yet
+- No Dockerfile is included in the current version
 
-IoT gateways
+## Project Structure
 
-MQTT/HTTP data ingestion
+```text
+Load-Alert-For-Truck-Logistics/
+├── app.py
+├── requirements.txt
+└── README.md
+```
 
-🚀 Future Improvements
+- `app.py` contains the full Streamlit dashboard, telemetry simulation logic, alert evaluation, charting, map rendering, and CSV export
+- `requirements.txt` defines the Python dependencies needed for local setup and Streamlit deployment
+- `README.md` documents the project, setup flow, and architecture
 
-Integration with real IoT hardware
+## Use Cases
 
-Cloud data storage
+- Fleet monitoring demos for logistics and telematics portfolios
+- Prototype validation for truck overload alert systems
+- Academic or open-source demonstration of IoT-style logistics dashboards
+- Early-stage UI foundation for real sensor integrations
+- Compliance and safety monitoring concepts for freight operations
 
-Predictive overload risk analysis
+## Future Improvements
 
-Multi-truck fleet monitoring
+- Replace simulated telemetry with real sensor ingestion via HTTP or MQTT
+- Add support for multiple trucks and fleet-wide monitoring
+- Persist telemetry in a database for historical analytics
+- Add authentication and role-based dashboard access
+- Introduce alert notifications through email, SMS, or messaging apps
+- Add route replay, geofencing, and trip summaries
+- Extend overload logic with anomaly detection or predictive analytics
 
-Driver behavior analytics
+## Contributing
 
-👤 Author
+Contributions are welcome. If you want to improve the dashboard, add real telemetry ingestion, or expand the monitoring workflow, feel free to fork the repository and open a pull request.
 
-Sai Sugeet
-Engineering Student | AI, IoT & Systems Enthusiast
+## License
+
+No license file is included in the current repository. Add a license if you want to make reuse terms explicit for contributors and employers reviewing the project.
